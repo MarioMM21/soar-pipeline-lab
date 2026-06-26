@@ -1,0 +1,16 @@
+﻿# Terraform state files (contains sensitive data)
+*.tfstate
+*.tfstate.backup
+.terraform/
+.terraform.lock.hcl
+
+# Vars file (contains your IP and email)
+terraform.tfvars
+
+# SSH keys
+*.pem
+
+# Crash logs
+crash.log
+override.tf
+override.tf.json
