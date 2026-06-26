@@ -10,7 +10,7 @@ resource "aws_sns_topic" "soar_alerts" {
   }
 }
 
-# SNS Topic Policy - allow EC2 instances to publish
+# SNS Topic Policy
 resource "aws_sns_topic_policy" "soar_alerts_policy" {
   arn = aws_sns_topic.soar_alerts.arn
 
@@ -30,15 +30,10 @@ resource "aws_sns_topic_policy" "soar_alerts_policy" {
         Sid    = "AllowOwnerFullAccess"
         Effect = "Allow"
         Principal = {
-          AWS = "*"
+          AWS = data.aws_caller_identity.current.account_id
         }
-        Action   = "sns:*"
+        Action   = "sns:Publish"
         Resource = aws_sns_topic.soar_alerts.arn
-        Condition = {
-          StringEquals = {
-            "AWS:SourceOwner" = data.aws_caller_identity.current.account_id
-          }
-        }
       }
     ]
   })
@@ -54,7 +49,7 @@ resource "aws_sns_topic_subscription" "soar_email_alert" {
   endpoint  = var.alert_email
 }
 
-# CloudWatch Alarm - High severity Wazuh alerts via SNS
+# CloudWatch Alarm
 resource "aws_cloudwatch_metric_alarm" "high_severity_alerts" {
   alarm_name          = "${var.project_name}-high-severity-alarm"
   comparison_operator = "GreaterThanOrEqualToThreshold"
